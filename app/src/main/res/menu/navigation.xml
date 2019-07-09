@@ -3,22 +3,22 @@
 
     <item
         android:id="@+id/navigation_gastos"
-        android:icon="@drawable/icon1"
+        android:icon="@drawable/statistics"
         android:title="Gastos"/>
 
     <item
         android:id="@+id/navigation_indicadores"
-        android:icon="@drawable/icon1"
+        android:icon="@drawable/money_bag_with_dollar_symbol"
         android:title="Indicadores"/>
 
     <item
         android:id="@+id/navigation_inventario"
-        android:icon="@drawable/icon1"
+        android:icon="@drawable/box_1"
         android:title="Inventario"/>
 
     <item
         android:id="@+id/navigation_ventas"
-        android:icon="@drawable/icon1"
+        android:icon="@drawable/coin_stack_1"
         android:title="Ventas"/>
 
 </menu>
