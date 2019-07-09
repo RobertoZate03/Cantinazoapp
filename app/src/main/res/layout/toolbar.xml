@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bg_toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:background="@color/blanco">
+
+    <ImageButton
+        android:id="@+id/btn_menu"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_gravity="center|left"
+        android:adjustViewBounds="true"
+        android:background="@android:color/transparent"
+        android:padding="10dp"
+        android:scaleType="fitXY"
+        android:tint="@color/negro"
+        android:src="@drawable/back" />
+
+    <TextView
+        android:id="@+id/tv_titulo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:gravity="left|center"
+        android:text="Hola titulo"
+        android:textColor="@color/negro"
+        android:textSize="18dp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|center"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btn_accion"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:adjustViewBounds="true"
+            android:background="@android:color/transparent"
+            android:padding="10dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/exit"
+            android:tint="@color/negro"/>
+
+    </LinearLayout>
+
+
+</FrameLayout>
