@@ -4,6 +4,87 @@
     android:layout_height="match_parent"
     android:background="@color/blanco">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_margin="20dp"
+            android:padding="10dp"
+            android:ems="10"
+            android:background="@drawable/edittext_style2"
+            android:drawableRight="@drawable/icon1"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:layout_weight="1"
+                android:background="@drawable/btn_rojo_solid"
+                android:text="Fijos"
+                android:textColor="@color/blanco" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:layout_weight="1"
+                android:background="@drawable/btn_rojo_border"
+                android:text="Personal"
+                android:textColor="@color/gris" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:layout_weight="1"
+                android:background="@drawable/btn_rojo_border"
+                android:text="Cocina"
+                android:textColor="@color/gris" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                android:layout_weight="1"
+                android:background="@drawable/btn_rojo_border"
+                android:text="Barra"
+                android:textColor="@color/gris" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/negro"
+            android:layout_margin="20dp"
+            android:text="Previsualización gastos fijos mensuales"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="-10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@color/negro"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_gastos"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_margin="10dp" />
+
+    </LinearLayout>
 
 
 </FrameLayout>

@@ -21,10 +21,10 @@
         android:layout_height="56dp"
         app:labelVisibilityMode="labeled"
         android:layout_gravity="bottom"
-        android:background="@color/colorPrimaryDark"
-        app:itemBackground="@color/colorPrimaryDark"
-        app:itemIconTint="@color/blanco"
-        app:itemTextColor="@color/blanco"
+        android:background="@color/blanco"
+        app:itemBackground="@drawable/nav_item_background"
+        app:itemTextColor="@drawable/nav_item_text"
+        app:itemIconTint="@color/negro"
         app:menu="@menu/navigation"/>
 
 </FrameLayout>

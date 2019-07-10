@@ -3,14 +3,12 @@ package mx.aqtiva.cantinazo.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import mx.aqtiva.cantinazo.R;
 import mx.aqtiva.cantinazo.global.BaseActivity;
@@ -42,19 +40,14 @@ public class Home extends BaseActivity {
 
         bottomNavigationView = findViewById(R.id.navigationView);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-            Fragment fragment = null;
             switch (item.getItemId()) {
-                case R.id.navigation_gastos:
-                    Toast.makeText(Home.this, "1", Toast.LENGTH_LONG).show();
-                    break;
                 case R.id.navigation_indicadores:
-                    Toast.makeText(Home.this, "2", Toast.LENGTH_LONG).show();
-                    break;
-                case R.id.navigation_inventario:
-                    Toast.makeText(Home.this, "3", Toast.LENGTH_LONG).show();
                     break;
                 case R.id.navigation_ventas:
-                    Toast.makeText(Home.this, "4", Toast.LENGTH_LONG).show();
+                    break;
+                case R.id.navigation_inventario:
+                    break;
+                case R.id.navigation_gastos:
                     break;
             }
             return true;
@@ -104,14 +97,14 @@ public class Home extends BaseActivity {
             switch (position) {
                 case 0:
                     if (page0 == null) {
-                        page0 = (FrameLayout) LayoutInflater.from(Home.this).inflate(R.layout.vp_gastos, null);
+                        page0 = (FrameLayout) LayoutInflater.from(Home.this).inflate(R.layout.vp_indicadores, null);
 
                     }
                     page = page0;
                     break;
                 case 1:
                     if (page1 == null) {
-                        page1 = (FrameLayout) LayoutInflater.from(Home.this).inflate(R.layout.vp_indicadores, null);
+                        page1 = (FrameLayout) LayoutInflater.from(Home.this).inflate(R.layout.vp_ventas, null);
 
                     }
                     page = page1;
@@ -126,7 +119,7 @@ public class Home extends BaseActivity {
 
                 case 3:
                     if (page3 == null) {
-                        page3 = (FrameLayout) LayoutInflater.from(Home.this).inflate(R.layout.vp_ventas, null);
+                        page3 = (FrameLayout) LayoutInflater.from(Home.this).inflate(R.layout.vp_gastos, null);
 
                     }
                     page = page3;

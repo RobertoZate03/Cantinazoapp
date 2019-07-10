@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item
-        android:id="@+id/navigation_gastos"
-        android:icon="@drawable/statistics"
-        android:title="Gastos"/>
+
 
     <item
         android:id="@+id/navigation_indicadores"
-        android:icon="@drawable/money_bag_with_dollar_symbol"
+        android:icon="@drawable/statistics"
         android:title="Indicadores"/>
+
+    <item
+        android:id="@+id/navigation_ventas"
+        android:icon="@drawable/money_bag_with_dollar_symbol"
+        android:title="Ventas"/>
 
     <item
         android:id="@+id/navigation_inventario"
@@ -17,8 +19,8 @@
         android:title="Inventario"/>
 
     <item
-        android:id="@+id/navigation_ventas"
+        android:id="@+id/navigation_gastos"
         android:icon="@drawable/coin_stack_1"
-        android:title="Ventas"/>
+        android:title="Gastos"/>
 
 </menu>
