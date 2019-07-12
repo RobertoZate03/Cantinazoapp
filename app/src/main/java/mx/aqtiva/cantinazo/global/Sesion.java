@@ -53,6 +53,17 @@ public class Sesion {
         return sp.getString("rol","");
     }
 
+    public String setIdSucursal(String idSucursal) {
+        spEditor = sp.edit();
+        spEditor.putString("idSucursal", idSucursal);
+        spEditor.commit();
+        return idSucursal;
+    }
+
+    public String getIdSucursal() {
+        return sp.getString("idSucursal","");
+    }
+
     public String setUsuario(String user) {
         spEditor = sp.edit();
         spEditor.putString("user", user);

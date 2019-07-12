@@ -4,6 +4,123 @@
     android:layout_height="match_parent"
     android:background="@color/blanco">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <Spinner
+            android:id="@+id/spSucursal"
+            style="@style/SpinnerTheme"
+            android:layout_width="match_parent"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_height="35dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:orientation="horizontal">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center"
+                android:layout_weight="0.4">
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp"
+                    android:padding="10dp"
+                    android:ems="10"
+                    android:background="@drawable/edittext_style2"/>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginRight="10dp"
+                    android:src="@drawable/icon1"
+                    android:layout_gravity="center|right"/>
+
+            </FrameLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_gravity="center"
+                android:layout_weight="0.6"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/btn_border_verde"
+                android:orientation="horizontal">
+
+                <Spinner
+                    android:id="@+id/spDias"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:gravity="center" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/brnICocina"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_margin="2dp"
+                android:layout_weight="1"
+                android:background="@drawable/btn_rojo_solid"
+                android:text="Cocina"
+                android:textColor="@color/blanco" />
+
+            <Button
+                android:id="@+id/btnIBarra"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_margin="2dp"
+                android:layout_weight="1"
+                android:background="@drawable/btn_rojo_border"
+                android:text="Barra"
+                android:textColor="@color/gris" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/negro"
+            android:layout_margin="20dp"
+            android:text="Previsualización gastos fijos mensuales"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="-10dp"
+            android:layout_marginBottom="10dp"
+            android:background="@color/negro"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_gastos"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_margin="10dp" />
+
+    </LinearLayout>
 
 
 </FrameLayout>

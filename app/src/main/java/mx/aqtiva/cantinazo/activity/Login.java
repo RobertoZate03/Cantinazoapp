@@ -56,13 +56,15 @@ public class Login extends BaseActivity {
                             sesion.setToken("Token " + key);
                             String rol = response.body().get("rol").getAsString();
                             sesion.setRol(rol);
+                            String idSucursal = response.body().get("idSucursal").getAsString();
+                            sesion.setRol(idSucursal);
                             //parseamos el json obtenido del backend
                             JSONObject jsonResponse = null;
                             try {
                                 jsonResponse = new JSONObject(response.body() + "");
                                 Log.e("Respuesta", jsonResponse + "");
                                 JSONArray array = jsonResponse.getJSONArray("user");
-                                sesion.setUsuario(array + "");
+                                sesion.setUsuario(response.body() + "");
                                 if(rol.equals("1")) {
                                     sesion.setLogin(true);
                                     Intent i = new Intent(Login.this,

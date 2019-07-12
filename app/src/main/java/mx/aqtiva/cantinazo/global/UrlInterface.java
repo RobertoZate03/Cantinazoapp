@@ -22,4 +22,14 @@ public interface UrlInterface {
                                  @Query("supervisor") String supervisor,
                                  @Query("fecha") String fecha);
 
+    @GET("getGastosApi/")
+    Call<JsonObject> getGastosApi(@Header("Authorization") String authorization,
+                                 @Query("fecha_inicio") String fecha_inicio,
+                                 @Query("fecha_fin") String fecha_fin,
+                                 @Query("tipo") String tipo,
+                                 @Query("sucursal") String sucursal);
+
+    @GET("getSucursalesApi/")
+    Call<JsonObject> getSucursalesApi(@Header("Authorization") String authorization);
+
 }

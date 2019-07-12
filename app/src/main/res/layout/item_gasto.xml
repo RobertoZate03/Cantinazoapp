@@ -6,14 +6,14 @@
     android:orientation="horizontal">
 
     <TextView
-        android:id="@+id/tv_motivo"
+        android:id="@+id/tvMotivo"
         android:layout_width="match_parent"
         android:layout_weight="0.3"
         android:layout_height="wrap_content"
         android:text="Motivo"/>
 
     <TextView
-        android:id="@+id/tv_monto"
+        android:id="@+id/tvCantidad"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0.7"
