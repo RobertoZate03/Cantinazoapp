@@ -29,7 +29,23 @@ public interface UrlInterface {
                                  @Query("tipo") String tipo,
                                  @Query("sucursal") String sucursal);
 
+    @GET("getInventarioApi/")
+    Call<JsonObject> getInventarioApi(@Header("Authorization") String authorization,
+                                  @Query("insumo") String insumo,
+                                  @Query("area") String area,
+                                  @Query("sucursal") String sucursal);
+
     @GET("getSucursalesApi/")
     Call<JsonObject> getSucursalesApi(@Header("Authorization") String authorization);
+
+    @GET("getInsumosApi/")
+    Call<JsonObject> getInsumosApi(@Header("Authorization") String authorization);
+
+    @GET("getVentasApi/")
+    Call<JsonObject> getVentasApi(@Header("Authorization") String authorization,
+                                      @Query("fecha_inicio") String fecha_inicio,
+                                      @Query("fecha_fin") String fecha_fin,
+                                      @Query("pagado") String pagado,
+                                      @Query("sucursal") String sucursal);
 
 }

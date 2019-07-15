@@ -13,10 +13,10 @@
             android:id="@+id/spSucursal"
             style="@style/SpinnerTheme"
             android:layout_width="match_parent"
-            android:layout_marginTop="20dp"
+            android:layout_height="35dp"
             android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_height="35dp" />
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="20dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -26,24 +26,25 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="35dp"
+                android:layout_gravity="center"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="10dp"
-                android:layout_gravity="center"
-                android:layout_weight="0.4">
+                android:layout_weight="0.4"
+                android:visibility="gone">
 
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="35dp"
-                    android:padding="10dp"
+                    android:background="@drawable/edittext_style2"
                     android:ems="10"
-                    android:background="@drawable/edittext_style2"/>
+                    android:padding="10dp" />
 
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
+                    android:layout_gravity="center|right"
                     android:layout_marginRight="10dp"
-                    android:src="@drawable/icon1"
-                    android:layout_gravity="center|right"/>
+                    android:src="@drawable/icon1" />
 
             </FrameLayout>
 
@@ -52,15 +53,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="35dp"
                 android:layout_gravity="center"
-                android:layout_weight="0.6"
-                android:layout_marginTop="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginLeft="10dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_weight="1"
                 android:background="@drawable/btn_border_verde"
                 android:orientation="horizontal">
 
                 <Spinner
-                    android:id="@+id/spDias"
+                    android:id="@+id/spProductos"
+                    style="@style/SpinnerTheme"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
@@ -97,21 +98,12 @@
 
         </LinearLayout>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/negro"
-            android:layout_margin="20dp"
-            android:text="Previsualización gastos fijos mensuales"/>
-
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="-10dp"
+            android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
-            android:background="@color/negro"/>
+            android:background="@color/negro" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_gastos"
