@@ -39,11 +39,20 @@ public class Login extends BaseActivity {
         etPassword = findViewById(R.id.etPassword);
         btnIniciar = findViewById(R.id.btnIniciar);
         btnIniciar.setOnClickListener(v -> loginClick(v));
+        if (sesion.getEmail().length() == 0) {
+            etEmail.setText("");
+            etPassword.setText("");
+        } else {
+            etEmail.setText(sesion.getEmail());
+            etPassword.setText(sesion.getPass());
+        }
     }
 
     public void loginClick(View v) {
         String usuario = etEmail.getText().toString();
+        sesion.setEmail(usuario);
         String password = etPassword.getText().toString();
+        sesion.setPass(password);
 
         Call<JsonObject> serviceDownload = retrofit.create(UrlInterface.class).login(usuario, password);
         serviceDownload.enqueue(new Callback<JsonObject>() {
@@ -52,12 +61,12 @@ public class Login extends BaseActivity {
                 if (response.code() >= 200 && response.code() < 300) {
                     if (response.body() != null && response.body().has("token")) {
                         try {
+
+                            Log.e("Respuesta", response.body() + "");
                             String key = response.body().get("token").getAsString();
                             sesion.setToken("Token " + key);
                             String rol = response.body().get("rol").getAsString();
                             sesion.setRol(rol);
-                            String idSucursal = response.body().get("idSucursal").getAsString();
-                            sesion.setRol(idSucursal);
                             //parseamos el json obtenido del backend
                             JSONObject jsonResponse = null;
                             try {

@@ -23,6 +23,17 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.formatter.DefaultAxisValueFormatter;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
@@ -33,6 +44,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import mx.aqtiva.cantinazo.R;
 import mx.aqtiva.cantinazo.adapters.AdapterGastos;
@@ -50,6 +62,8 @@ import mx.aqtiva.cantinazo.listas.ListaInventario;
 import mx.aqtiva.cantinazo.listas.ListaProductos;
 import mx.aqtiva.cantinazo.listas.ListaSucursales;
 import mx.aqtiva.cantinazo.listas.ListaVentas;
+import mx.aqtiva.cantinazo.listas.ListaVentasArea;
+import mx.aqtiva.cantinazo.listas.ListaVentasDias;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -71,9 +85,13 @@ public class Home extends BaseActivity {
     ArrayList<ListaProductos> listaProductos = new ArrayList<>();
     ArrayList<ListaInventario> listaInventarios = new ArrayList<>();
     ArrayList<ListaVentas> listaVentas = new ArrayList<>();
-
+    ArrayList<ListaVentasDias> listaVentasDias = new ArrayList<>();
+    ArrayList<ListaVentasArea> listaVentasAreas = new ArrayList<>();
     String sucursalSelected = "0";
     String insumoSelected = "0";
+    float totalVenta = 0;
+    private float[] precios;
+    ArrayList<String> nombreMarca;
 
     ////date and time piker
     private static final String CERO = "0";
@@ -88,7 +106,9 @@ public class Home extends BaseActivity {
     final int anio = c.get(Calendar.YEAR);
 
     String id, email, first_name, last_name, username;
-    Button btnGFijos, btnGPersonal, btnGCocina, btnGBarra, brnICocina, btnIBarra;
+    Button btnGFijos, btnGPersonal, btnGCocina, btnGBarra, brnICocina, btnIBarra, brnVPagado, btnVNoPagado;
+
+    BarChart grafica, barChart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,7 +160,8 @@ public class Home extends BaseActivity {
                         break;
                     case 1:
                         tvTitulo.setText("Venta");
-                        getVentas("2019-07-07", "2019-07-07", "1", "2");
+                        getVentas("2019-07-01", "2019-07-09", "1", "3");
+                        getVentasArea("2019-07-01", "2019-07-09", "1", "3", "2");
                         break;
                     case 2:
                         tvTitulo.setText("Inventario");
@@ -221,6 +242,14 @@ public class Home extends BaseActivity {
                     if (page1 == null) {
                         page1 = (FrameLayout) LayoutInflater.from(Home.this).inflate(R.layout.vp_ventas, null);
                         tvTitulo.setText("Venta");
+                        brnVPagado = page1.findViewById(R.id.brnVPagado);
+                        brnVPagado.setOnClickListener(v -> cargarVenta("1"));
+                        btnVNoPagado = page1.findViewById(R.id.btnVNoPagado);
+                        btnVNoPagado.setOnClickListener(v -> cargarVenta("0"));
+                        grafica = page1.findViewById(R.id.grafica1);
+                        nombreMarca = new ArrayList<>();
+                        barChart = page1.findViewById(R.id.grafica2);
+                        addDataSet2();
                     }
                     page = page1;
                     break;
@@ -413,6 +442,23 @@ public class Home extends BaseActivity {
         }
         Log.e("Res", insumoSelected + "-" + area + "-" + sucursalSelected);
         getInventario(insumoSelected, area, sucursalSelected);
+    }
+
+    private void cargarVenta(String pagado) {
+        switch (pagado) {
+            case "1":
+                brnVPagado.setBackgroundResource(R.drawable.btn_rojo_solid);
+                btnVNoPagado.setBackgroundResource(R.drawable.btn_rojo_border);
+                brnVPagado.setTextColor(Color.parseColor("#ffffff"));
+                btnVNoPagado.setTextColor(Color.parseColor("#cccccc"));
+                break;
+            case "0":
+                brnVPagado.setBackgroundResource(R.drawable.btn_rojo_border);
+                btnVNoPagado.setBackgroundResource(R.drawable.btn_rojo_solid);
+                brnVPagado.setTextColor(Color.parseColor("#cccccc"));
+                btnVNoPagado.setTextColor(Color.parseColor("#ffffff"));
+                break;
+        }
     }
 
     public void getGastos(String fechaInicio, String fechaFin, String tipo, String sucursal) {
@@ -620,8 +666,7 @@ public class Home extends BaseActivity {
                         if (response.body().get("success").getAsInt() == 1) {
                             try {
                                 listaVentas.clear();
-                                listaVentas.add(new ListaVentas("Id", "Total", "Mesa", "Fecha", "Pagado", "User Id", "User", "Tipo", "Hora", "Terminado"));
-                                //parseamos el json obtenido del backend
+                                nombreMarca.clear();
                                 JSONObject jsonResponse = null;
                                 try {
                                     jsonResponse = new JSONObject(response.body() + "");
@@ -639,9 +684,75 @@ public class Home extends BaseActivity {
                                         String hora_venta = data.getJSONObject(i).getString("hora_venta");
                                         String terminado = data.getJSONObject(i).getString("terminado");
 
+                                        //nombreMarca.add(i, id + ".-" + fecha_venta);
                                         listaVentas.add(new ListaVentas(id, monto_total, mesa, fecha_venta, pagado, usuario_id, usuario, tipo_pago, hora_venta, terminado));
                                     }
-                                    Log.e("Respuesta", listaVentas.size() + "");
+                                    JSONArray data2 = jsonResponse.getJSONArray("ventasReportexDia");
+                                    for (int y = 0; y < data2.length(); y++) {
+                                        String total = data2.getJSONObject(y).getString("total");
+                                        String fecha = data2.getJSONObject(y).getString("fecha");
+
+                                        nombreMarca.add(fecha);
+                                        listaVentasDias.add(new ListaVentasDias(total, fecha));
+                                    }
+                                    totalVenta = response.body().get("totalVenta").getAsFloat();
+                                    addDataSet();
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                return;
+                            } catch (Exception e) {
+                                Log.e("err", e.toString());
+                            }
+                        } else {
+                            Toast.makeText(Home.this, "Venta.- Sin datos", Toast.LENGTH_LONG).show();
+                        }
+                    } else {
+                        Toast.makeText(Home.this, "Venta.- Ocurrio un error", Toast.LENGTH_LONG).show();
+                    }
+                }
+                if (response.code() == 400) {
+                    Toast.makeText(Home.this, "Venta.- Sin datos", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(Home.this, "Venta.- No se pudo conectar con el servidor", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
+                Toast.makeText(Home.this, "Venta.- No se pudo conectar con el servidor, revise su conexion a internet", Toast.LENGTH_LONG).show();
+            }
+        });
+
+    }
+
+    public void getVentasArea(String fechaI, String fechaF, String pagado, String sucursal, String area_id) {
+        Call<JsonObject> serviceDownload = retrofit.create(UrlInterface.class).getVentasDivididasApi(sesion.getToken(), fechaI, fechaF, pagado, sucursal);
+        serviceDownload.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
+                if (response.code() >= 200 && response.code() < 300) {
+
+                    if (response.body() != null && response.body().has("success")) {
+                        if (response.body().get("success").getAsInt() == 1) {
+                            try {
+                                listaVentasAreas.clear();
+                                JSONObject jsonResponse = null;
+                                try {
+                                    jsonResponse = new JSONObject(response.body() + "");
+                                    Log.e("Respuesta", jsonResponse + "");
+                                    JSONArray data = jsonResponse.getJSONArray("content");
+                                    for (int i = 0; i < data.length(); i++) {
+                                        String fecha = data.getJSONObject(i).getString("fecha");
+                                        String producto_id = data.getJSONObject(i).getString("producto_id");
+                                        String producto = data.getJSONObject(i).getString("producto");
+                                        String total = data.getJSONObject(i).getString("total");
+                                        String area = data.getJSONObject(i).getString("area");
+                                        if(area.equals(area_id)) {
+                                            listaVentasAreas.add(new ListaVentasArea(fecha, producto_id, producto, total, area));
+                                        }
+                                    }
+                                    Log.e("Respuesta", listaVentasAreas.size() + " .- lista de ventas por area");
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -681,5 +792,153 @@ public class Home extends BaseActivity {
         }, anio, mes, dia);
         recogerFecha.show();
 
+    }
+
+    private void addDataSet() {
+        Log.e("Resultado", nombreMarca + " .- tamaño nombreMarca");
+        Log.e("Resultado", listaVentasDias + " .- tamaño listaVentasDias");
+        grafica.setMaxVisibleValueCount(listaVentasDias.size());
+        ArrayList<BarEntry> precio = new ArrayList<>();
+        for (int i = 0; i < listaVentasDias.size(); i++) {
+            precios = new float[listaVentasDias.size()];
+
+            float entrada = Float.parseFloat("" + listaVentasDias.get(i).monto_total);
+            precios[i] = entrada;
+            precio.add(new BarEntry(i, entrada));
+        }
+
+        BarDataSet dataSet = new BarDataSet(precio, "Venta");
+
+        ArrayList<Integer> colors = new ArrayList<>();
+        int color1 = getResources().getColor(R.color.graficaReporteAzulMar);
+        int color2 = getResources().getColor(R.color.graficaReporteRosa);
+        int color3 = getResources().getColor(R.color.graficaReporteAnaranjado);
+        int color4 = getResources().getColor(R.color.graficaReporeCafe);
+        int color5 = getResources().getColor(R.color.grafica_reporte_verde);
+        int color6 = getResources().getColor(R.color.graficaReporteMorado);
+        int color7 = getResources().getColor(R.color.graficaReporteAzul);
+        colors.add(color1);
+        colors.add(color2);
+        colors.add(color3);
+        colors.add(color4);
+        colors.add(color5);
+        colors.add(color6);
+        colors.add(color7);
+        dataSet.setColors(colors);
+
+        dataSet.setValueTextColor(R.color.gris);
+        YAxis left = grafica.getAxisLeft();
+        left.setEnabled(true);
+
+        XAxis xaxis = grafica.getXAxis();
+        xaxis.setDrawGridLines(false);
+        xaxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xaxis.setGranularity(1f);
+        xaxis.setDrawLabels(true);
+        xaxis.setDrawAxisLine(false);
+        xaxis.setValueFormatter(new IndexAxisValueFormatter(nombreMarca));
+        xaxis.setGridColor(R.color.gris);
+        xaxis.setTextColor(R.color.gris);
+
+        left.setValueFormatter(new DefaultAxisValueFormatter(2));
+        left.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+        ArrayList<IBarDataSet> dataSets = new ArrayList<>();
+        dataSets.add(dataSet);
+        BarData data = new BarData(dataSets);
+        data.setBarWidth(0.9f);
+        data.setValueTextSize(9f);
+        data.setValueTextColor(Color.BLACK);
+        Legend legend = grafica.getLegend();
+        legend.setEnabled(true);
+        grafica.animateY(1000);
+        grafica.setData(data);
+        grafica.invalidate();
+        grafica.setDescription(null);
+
+
+    }
+
+    public void addDataSet2(){
+        barChart.setDrawBarShadow(false);
+        barChart.setDrawValueAboveBar(true);
+        barChart.setDescription(null);
+        barChart.setMaxVisibleValueCount(50);
+        barChart.setPinchZoom(false);
+        barChart.setDrawGridBackground(false);
+
+        XAxis xl = barChart.getXAxis();
+        xl.setGranularity(1f);
+        xl.setCenterAxisLabels(true);
+        xl.setValueFormatter(new IndexAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                return String.valueOf((int) value);
+            }
+        });
+
+        YAxis leftAxis = barChart.getAxisLeft();
+        leftAxis.setValueFormatter(new IndexAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                return String.valueOf((int) value);
+            }
+        });
+        leftAxis.setDrawGridLines(false);
+        leftAxis.setSpaceTop(30f);
+        leftAxis.setAxisMinValue(0f); // this replaces setStartAtZero(true
+        barChart.getAxisRight().setEnabled(false);
+
+        //data
+        float groupSpace = 0.04f;
+        float barSpace = 0.02f; // x2 dataset
+        float barWidth = 0.46f; // x2 dataset
+        // (0.46 + 0.02) * 2 + 0.04 = 1.00 -> interval per "group"
+
+        int startYear = 1980;
+        int endYear = 1985;
+
+
+        List<BarEntry> yVals1 = new ArrayList<>();
+        List<BarEntry> yVals2 = new ArrayList<>();
+
+
+        for (int i = startYear; i < endYear; i++) {
+            yVals1.add(new BarEntry(i, 0.4f));
+        }
+
+        for (int i = startYear; i < endYear; i++) {
+            yVals2.add(new BarEntry(i, 0.7f));
+        }
+
+
+        BarDataSet set1, set2;
+
+        if (barChart.getData() != null && barChart.getData().getDataSetCount() > 0) {
+            set1 = (BarDataSet)barChart.getData().getDataSetByIndex(0);
+            set2 = (BarDataSet)barChart.getData().getDataSetByIndex(1);
+            set1.setValues(yVals1);
+            set2.setValues(yVals2);
+            barChart.getData().notifyDataChanged();
+            barChart.notifyDataSetChanged();
+        } else {
+            int color1 = getResources().getColor(R.color.graficaReporteAzulMar);
+            int color2 = getResources().getColor(R.color.graficaReporteMorado);
+            set1 = new BarDataSet(yVals1, "Cocina");
+            set1.setColor(color1);
+            set2 = new BarDataSet(yVals2, "Barra");
+            set2.setColor(color2);
+
+            ArrayList<IBarDataSet> dataSets = new ArrayList<>();
+            dataSets.add(set1);
+            dataSets.add(set2);
+
+            BarData data = new BarData(dataSets);
+            barChart.setData(data);
+        }
+
+        barChart.getBarData().setBarWidth(barWidth);
+        barChart.getXAxis().setAxisMinValue(startYear);
+        barChart.groupBars(startYear, groupSpace, barSpace);
+        barChart.invalidate();
     }
 }

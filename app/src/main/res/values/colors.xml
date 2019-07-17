@@ -11,4 +11,12 @@
     <color name="nav.item.background.default">#ffffff</color>
     <color name="gris">#cccccc</color>
     <color name="rojo">#ba2d34</color>
+
+    <color name="grafica_reporte_verde">#71ab01</color>
+    <color name="graficaReporteMorado">#7b0a4d</color>
+    <color name="graficaReporteAzul">#e8c91d</color>
+    <color name="graficaReporteAzulMar">#01498d</color>
+    <color name="graficaReporteRosa">#642f2f</color>
+    <color name="graficaReporteAnaranjado">#ec9b00</color>
+    <color name="graficaReporeCafe">#902a34</color>
 </resources>

@@ -48,4 +48,11 @@ public interface UrlInterface {
                                       @Query("pagado") String pagado,
                                       @Query("sucursal") String sucursal);
 
+    @GET("getVentasDivididasApi/")
+    Call<JsonObject> getVentasDivididasApi(@Header("Authorization") String authorization,
+                                  @Query("fecha_inicio") String fecha_inicio,
+                                  @Query("fecha_fin") String fecha_fin,
+                                  @Query("pagado") String pagado,
+                                  @Query("sucursal") String sucursal);
+
 }

@@ -75,4 +75,27 @@ public class Sesion {
         return sp.getString("user","");
     }
 
+    public String setEmail(String email) {
+        spEditor = sp.edit();
+        spEditor.putString("email", email);
+        spEditor.commit();
+        return email;
+    }
+
+    public String getEmail() {
+        return sp.getString("email","");
+    }
+
+
+    public String setPass(String pass) {
+        spEditor = sp.edit();
+        spEditor.putString("pass", pass);
+        spEditor.commit();
+        return pass;
+    }
+
+    public String getPass() {
+        return sp.getString("pass","");
+    }
+
 }
