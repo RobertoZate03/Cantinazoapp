@@ -5,13 +5,13 @@ import android.os.Bundle;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import mx.aqtiva.cantinazo.R;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class BaseActivity extends Activity {
 
-    private final static String baseUrl = "http://cantinazo.mx/";//ip trabajo
+    private final static String baseUrl = "https://cantinazo.mx/";//servidor
+    //private final static String baseUrl = "http://192.168.100.35:8000/";//ip trabajo
     public final static String urlapp = baseUrl + "sistema/";
     protected Retrofit retrofit;
     public static TextView tvTitulo;

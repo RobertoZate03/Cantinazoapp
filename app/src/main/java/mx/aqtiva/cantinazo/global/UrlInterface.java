@@ -14,7 +14,7 @@ public interface UrlInterface {
 
     @FormUrlEncoded
     @POST("loginApi/")
-    Call<JsonObject> login(@Field("username") String username, @Field("password") String password);
+    Call<JsonObject> loginApi(@Field("username") String username, @Field("password") String password);
 
     @GET("getCheckins/")
     Call<JsonObject> getCheckins(@Header("Authorization") String authorization,

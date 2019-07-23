@@ -736,11 +736,13 @@ public class Home extends BaseActivity {
     }
 
     public void getVentas(String fechaI, String fechaF, String pagado, String sucursal) {
+        Log.e("Respuesta ->",  "entra a get ventas");
         progress.show();
         Call<JsonObject> serviceDownload = retrofit.create(UrlInterface.class).getVentasApi(sesion.getToken(), fechaI, fechaF, pagado, sucursal);
         serviceDownload.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
+                Log.e("Respuesta ->", response + "");
                 if (response.code() >= 200 && response.code() < 300) {
 
                     if (response.body() != null && response.body().has("success")) {
@@ -751,7 +753,7 @@ public class Home extends BaseActivity {
                                 JSONObject jsonResponse = null;
                                 try {
                                     jsonResponse = new JSONObject(response.body() + "");
-                                    Log.e("Respuesta", jsonResponse + "");
+                                    Log.e("Respuesta ->", jsonResponse + "");
                                     JSONArray data = jsonResponse.getJSONArray("ventasReporte");
                                     for (int i = 0; i < data.length(); i++) {
                                         String id = data.getJSONObject(i).getString("id");
@@ -942,6 +944,7 @@ public class Home extends BaseActivity {
     }
 
     private void addDataSet() {
+        Log.e("Res", "entra " +  listaVentasDias.size());
         grafica.clear();
         grafica.setMaxVisibleValueCount(listaVentasDias.size());
         ArrayList<BarEntry> precio = new ArrayList<>();
@@ -1003,23 +1006,23 @@ public class Home extends BaseActivity {
     }
 
     public void addDataSet2() {
-        barChart.setDrawBarShadow(false);
+        barChart.setDrawBarShadow(true);
         barChart.setDrawValueAboveBar(true);
         barChart.setDescription(null);
         barChart.setMaxVisibleValueCount(50);
-        barChart.setPinchZoom(false);
-        barChart.setDrawGridBackground(false);
+        barChart.setPinchZoom(true);
+        barChart.setDrawGridBackground(true);
 
-        XAxis xl = barChart.getXAxis();
-        xl.setGranularity(1f);
-        xl.setCenterAxisLabels(true);
-        xl.setValueFormatter(new IndexAxisValueFormatter(fechaVenta));
-        /*xl.setValueFormatter(new IndexAxisValueFormatter() {
-            @Override
-            public String getFormattedValue(float value, AxisBase axis) {
-                return String.valueOf((int) value);
-            }
-        });*/
+        XAxis xaxis = barChart.getXAxis();
+        xaxis.setDrawGridLines(true);
+        xaxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xaxis.setGranularity(0.68f);
+        xaxis.setDrawLabels(true);
+        xaxis.setCenterAxisLabels(false);
+        xaxis.setDrawAxisLine(true);
+        xaxis.setValueFormatter(new IndexAxisValueFormatter(fechaVenta));
+        xaxis.setGridColor(R.color.gris);
+        xaxis.setTextColor(R.color.gris);
 
         YAxis leftAxis = barChart.getAxisLeft();
         leftAxis.setValueFormatter(new IndexAxisValueFormatter() {
@@ -1036,30 +1039,15 @@ public class Home extends BaseActivity {
         //data
         float groupSpace = 0.04f;
         float barSpace = 0.02f; // x2 dataset
-        float barWidth = 0.46f; // x2 dataset
-        // (0.46 + 0.02) * 2 + 0.04 = 1.00 -> interval per "group"
-
-        //int startYear = 1980;
-        //int endYear = 1985;
-
+        float barWidth = 0.30f; // x2 dataset
 
         List<BarEntry> yVals1 = new ArrayList<>();
         List<BarEntry> yVals2 = new ArrayList<>();
 
 
         for (int i = 0; i < listaVBarraCocinas.size(); i++) {
-            if(listaVBarraCocinas.get(i).totalBarra.equals("0.0f")){
-                yVals1.add(new BarEntry(i, Float.parseFloat(listaVBarraCocinas.get(i).totalCocina)));
-                yVals2.add(new BarEntry(i, 50.0f));
-            }else{
-                if(listaVBarraCocinas.get(i).totalCocina.equals("0.0f")){
-                    yVals1.add(new BarEntry(i, 50.0f));
-                    yVals2.add(new BarEntry(i, Float.parseFloat(listaVBarraCocinas.get(i).totalBarra)));
-                }else{
-                    yVals1.add(new BarEntry(i, Float.parseFloat(listaVBarraCocinas.get(i).totalCocina)));
-                    yVals2.add(new BarEntry(i, Float.parseFloat(listaVBarraCocinas.get(i).totalBarra)));
-                }
-            }
+            yVals1.add(new BarEntry(i, Float.parseFloat(listaVBarraCocinas.get(i).totalCocina)));
+            yVals2.add(new BarEntry(i, Float.parseFloat(listaVBarraCocinas.get(i).totalBarra)));
         }
 
         BarDataSet set1, set2;

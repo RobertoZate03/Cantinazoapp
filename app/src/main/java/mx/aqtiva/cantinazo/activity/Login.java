@@ -66,19 +66,19 @@ public class Login extends BaseActivity {
     }
 
     public void loginClick(View v) {
-        String usuario = etEmail.getText().toString();
-        sesion.setEmail(usuario);
+        String username = etEmail.getText().toString();
+        sesion.setEmail(username);
         String password = etPassword.getText().toString();
         sesion.setPass(password);
 
-        Call<JsonObject> serviceDownload = retrofit.create(UrlInterface.class).login(usuario, password);
+        Call<JsonObject> serviceDownload = retrofit.create(UrlInterface.class).loginApi(username, password);
         serviceDownload.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
+                Log.e("Respuesta", response + "");
                 if (response.code() >= 200 && response.code() < 300) {
                     if (response.body() != null && response.body().has("token")) {
                         try {
-
                             Log.e("Respuesta", response.body() + "");
                             String key = response.body().get("token").getAsString();
                             sesion.setToken("Token " + key);
@@ -111,11 +111,6 @@ public class Login extends BaseActivity {
                     }else{
                         Log.e("Token", "No trae el token, algo paso");
                     }
-                }
-                if (response.code() == 400) {
-                    Toast.makeText(Login.this, "Inicio de sesión.- Usuario o Contraseña incorrectos", Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(Login.this, "1.- Inicio de sesión.- No se pudo conectar con el servidor", Toast.LENGTH_LONG).show();
                 }
             }
 
