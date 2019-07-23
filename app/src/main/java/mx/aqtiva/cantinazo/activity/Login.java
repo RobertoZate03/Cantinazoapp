@@ -4,9 +4,13 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -29,6 +33,7 @@ public class Login extends BaseActivity {
     Button btnIniciar;
     EditText etEmail, etPassword;
     Sesion sesion;
+    CheckBox checkBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +42,18 @@ public class Login extends BaseActivity {
         sesion = new Sesion(this);
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
+        checkBox = findViewById(R.id.checkbox);
+        checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                // show password
+                checkBox.setText("Ocultar password");
+                etPassword.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+            } else {
+                // hide password
+                checkBox.setText("Mostrar password");
+                etPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
+            }
+        });
         btnIniciar = findViewById(R.id.btnIniciar);
         btnIniciar.setOnClickListener(v -> loginClick(v));
         if (sesion.getEmail().length() == 0) {

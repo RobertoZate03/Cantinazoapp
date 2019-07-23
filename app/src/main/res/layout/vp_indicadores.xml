@@ -22,57 +22,38 @@
                 android:layout_marginRight="20dp"
                 android:layout_height="35dp" />
 
-            <LinearLayout
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="80dp"
-                android:orientation="horizontal">
+                android:layout_height="35dp"
+                android:layout_margin="20dp"
+                android:layout_gravity="center">
 
-                <FrameLayout
+                <TextView
+                    android:id="@+id/tvFecha"
                     android:layout_width="match_parent"
                     android:layout_height="35dp"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_gravity="center"
-                    android:layout_weight="0.4">
+                    android:padding="10dp"
+                    android:ems="10"
+                    android:background="@drawable/edittext_style2"/>
 
-                    <EditText
-                        android:layout_width="match_parent"
-                        android:layout_height="35dp"
-                        android:padding="10dp"
-                        android:ems="10"
-                        android:background="@drawable/edittext_style2"/>
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginRight="10dp"
+                    android:src="@drawable/icon1"
+                    android:layout_gravity="center|right"/>
 
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginRight="10dp"
-                        android:src="@drawable/icon1"
-                        android:layout_gravity="center|right"/>
+            </FrameLayout>
 
-                </FrameLayout>
-
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="35dp"
-                        android:layout_gravity="center"
-                        android:layout_weight="0.6"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginRight="10dp"
-                        android:layout_marginLeft="10dp"
-                        android:background="@drawable/btn_border_verde"
-                        android:orientation="horizontal">
-
-                        <Spinner
-                            android:id="@+id/spDias"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_gravity="center"
-                            android:gravity="center" />
-
-                    </LinearLayout>
-
-            </LinearLayout>
+            <Button
+                android:id="@+id/btnFiltro"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/btn_rojo_solid"
+                android:text="Filtrar"
+                android:textColor="@color/blanco" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -104,72 +85,132 @@
 
                 </LinearLayout>
 
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/rv_gastos"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:layout_margin="20dp" />
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:orientation="vertical">
 
-                <Button
-                    android:id="@+id/btnIniciar"
-                    android:layout_width="match_parent"
-                    android:layout_height="35dp"
-                    android:layout_marginLeft="30dp"
-                    android:layout_marginTop="30dp"
-                    android:layout_marginRight="30dp"
-                    android:background="@drawable/btn_rojo_solid"
-                    android:text="Gastos Totales $1000.00"
-                    android:textColor="@color/blanco"
-                    android:textSize="18dp"
-                    android:textStyle="normal" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_weight="0.3"
+                        android:layout_height="wrap_content"
+                        android:text="Total gasto fijo"
+                        android:textColor="@color/negro"/>
 
-            </LinearLayout>
+                    <TextView
+                        android:id="@+id/tv_total_gasto_fijo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.7"
+                        android:layout_marginLeft="10dp"
+                        android:text="$1000.00"/>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="5dp"
+                        android:background="@color/negro"/>
+
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="20dp"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="40dp"
-                        android:layout_weight="0.9"
-                        android:src="@drawable/bank"/>
+                    android:padding="10dp"
+                    android:orientation="vertical">
 
                     <TextView
                         android:layout_width="match_parent"
+                        android:layout_weight="0.3"
                         android:layout_height="wrap_content"
+                        android:text="Total gasto personal"
+                        android:textColor="@color/negro"/>
+
+                    <TextView
+                        android:id="@+id/tv_total_gasto_personal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.7"
                         android:layout_marginLeft="10dp"
-                        android:text="Gastos locales"
-                        android:layout_gravity="bottom"
-                        android:textStyle="bold"
-                        android:gravity="bottom|left"
-                        android:layout_weight="0.1"
-                        android:textColor="@color/rojo"/>
+                        android:text="$1000.00"/>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="5dp"
+                        android:background="@color/negro"/>
 
                 </LinearLayout>
 
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/rv_gastos2"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:layout_margin="20dp" />
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:orientation="vertical">
 
-                <Button
-                    android:id="@+id/btnIniciar2"
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_weight="0.3"
+                        android:layout_height="wrap_content"
+                        android:text="Total gasto cocina"
+                        android:textColor="@color/negro"/>
+
+                    <TextView
+                        android:id="@+id/tv_total_gasto_cocina"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.7"
+                        android:layout_marginLeft="10dp"
+                        android:text="$1000.00"/>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="5dp"
+                        android:background="@color/negro"/>
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_weight="0.3"
+                        android:layout_height="wrap_content"
+                        android:text="Total gasto barra"
+                        android:textColor="@color/negro"/>
+
+                    <TextView
+                        android:id="@+id/tv_total_gasto_barra"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.7"
+                        android:layout_marginLeft="10dp"
+                        android:text="$1000.00"/>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="5dp"
+                        android:background="@color/negro"/>
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_total_gastos"
                     android:layout_width="match_parent"
                     android:layout_height="35dp"
                     android:layout_marginLeft="30dp"
                     android:layout_marginTop="30dp"
                     android:layout_marginRight="30dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
                     android:background="@drawable/btn_rojo_solid"
                     android:text="Gastos Totales $1000.00"
                     android:textColor="@color/blanco"
@@ -208,22 +249,75 @@
 
                 </LinearLayout>
 
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/rv_gastos3"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:layout_margin="20dp" />
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:orientation="vertical">
 
-                <Button
-                    android:id="@+id/btnIniciar3"
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_weight="0.3"
+                        android:layout_height="wrap_content"
+                        android:text="Total ventas barra"
+                        android:textColor="@color/negro"/>
+
+                    <TextView
+                        android:id="@+id/tv_total_venta_barra"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.7"
+                        android:layout_marginLeft="10dp"
+                        android:text="$1000.00"/>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="5dp"
+                        android:background="@color/negro"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="10dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_weight="0.3"
+                        android:layout_height="wrap_content"
+                        android:text="Total venta cocina"
+                        android:textColor="@color/negro"/>
+
+                    <TextView
+                        android:id="@+id/tv_total_venta_cocina"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.7"
+                        android:layout_marginLeft="10dp"
+                        android:text="$1000.00"/>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="5dp"
+                        android:background="@color/negro"/>
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_total_venta"
                     android:layout_width="match_parent"
                     android:layout_height="35dp"
                     android:layout_marginLeft="30dp"
                     android:layout_marginTop="30dp"
                     android:layout_marginRight="30dp"
+                    android:layout_gravity="center"
+                    android:gravity="center"
                     android:background="@drawable/btn_rojo_solid"
-                    android:text="Gastos Totales $1000.00"
+                    android:text="Ventas totales $1000.00"
                     android:textColor="@color/blanco"
                     android:textSize="18dp"
                     android:textStyle="normal" />

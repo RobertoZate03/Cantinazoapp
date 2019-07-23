@@ -47,8 +47,22 @@
             android:layout_marginRight="30dp"
             android:background="@drawable/edittext_style1"
             android:hint="Password"
+            android:inputType="textPassword"
             android:paddingLeft="10dp"
             android:paddingRight="10dp" />
+
+        <CheckBox
+            android:id="@+id/checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:padding="10dp"
+            android:checked="false"
+            android:layout_marginTop="15dp"
+            android:layout_marginRight="30dp"
+            android:text="Mostrar password"
+            android:background="@drawable/edittext_style1"
+            android:textColor="@color/negro"/>
 
         <Button
             android:id="@+id/btnIniciar"

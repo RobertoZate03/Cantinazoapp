@@ -1,6 +1,7 @@
 package mx.aqtiva.cantinazo.activity;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -61,6 +62,7 @@ import mx.aqtiva.cantinazo.listas.ListaGastos;
 import mx.aqtiva.cantinazo.listas.ListaInventario;
 import mx.aqtiva.cantinazo.listas.ListaProductos;
 import mx.aqtiva.cantinazo.listas.ListaSucursales;
+import mx.aqtiva.cantinazo.listas.ListaVBarraCocina;
 import mx.aqtiva.cantinazo.listas.ListaVentas;
 import mx.aqtiva.cantinazo.listas.ListaVentasArea;
 import mx.aqtiva.cantinazo.listas.ListaVentasDias;
@@ -74,12 +76,13 @@ public class Home extends BaseActivity {
     BottomNavigationView bottomNavigationView;
     FrameLayout page0, page1, page2, page3;
     ArrayList<ListaGastos> listaGastos = new ArrayList<>();
+    ArrayList<ListaVBarraCocina> listaVBarraCocinas = new ArrayList<>();
     RecyclerView rvGastos, rvInventario;
     AdapterGastos adapterGastos;
     AdapterInventario adapterInventario;
-    TextView tvFecha;
-    Spinner spSucursal1, spSucursal2, spSucursal3, spProductos;
-    AdapterSucursales adapterSucursales1, adapterSucursales2, adapterSucursales3;
+    TextView tvFecha, tvFechaVentaI, tvFechaVentaF, tvFechaIndicadores;
+    Spinner spSucursal1, spSucursal2, spSucursal3, spSucursal4, spProductos;
+    AdapterSucursales adapterSucursales1, adapterSucursales2, adapterSucursales3, adapterSucursales4;
     AdapterProductos adapterProductos;
     ArrayList<ListaSucursales> listaSucursales = new ArrayList<>();
     ArrayList<ListaProductos> listaProductos = new ArrayList<>();
@@ -92,7 +95,8 @@ public class Home extends BaseActivity {
     float totalVenta = 0;
     private float[] precios;
     ArrayList<String> nombreMarca;
-
+    ArrayList<String> fechaVenta;
+    ProgressDialog progress;
     ////date and time piker
     private static final String CERO = "0";
     private static final String BARRA = "-";
@@ -106,9 +110,11 @@ public class Home extends BaseActivity {
     final int anio = c.get(Calendar.YEAR);
 
     String id, email, first_name, last_name, username;
-    Button btnGFijos, btnGPersonal, btnGCocina, btnGBarra, brnICocina, btnIBarra, brnVPagado, btnVNoPagado;
+    Button btnGFijos, btnGPersonal, btnGCocina, btnGBarra, brnICocina, btnIBarra, brnVPagado, btnVNoPagado, btnFiltro;
 
     BarChart grafica, barChart;
+
+    TextView tv_total_gasto_fijo, tv_total_gasto_personal, tv_total_gasto_cocina, tv_total_gasto_barra, tv_total_gastos, tv_total_venta_barra, tv_total_venta_cocina, tv_total_venta;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +122,11 @@ public class Home extends BaseActivity {
         setContentView(R.layout.activity_main);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         sesion = new Sesion(this);
+        progress = new ProgressDialog(Home.this);
+        progress.setMessage("Cargando...");
+        progress.setTitle("Cantinazo");
+        progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progress.setCancelable(true);
         tvTitulo = findViewById(R.id.tv_titulo);
         btn_accion = findViewById(R.id.btn_accion);
         btn_menu = findViewById(R.id.btn_menu);
@@ -156,21 +167,16 @@ public class Home extends BaseActivity {
                 switch (position) {
                     case 0:
                         tvTitulo.setText("Indicadores");
-                        getSucursales();
                         break;
                     case 1:
                         tvTitulo.setText("Venta");
-                        getVentas("2019-07-01", "2019-07-09", "1", "3");
-                        getVentasArea("2019-07-01", "2019-07-09", "1", "3", "2");
                         break;
                     case 2:
                         tvTitulo.setText("Inventario");
-                        getSucursales();
                         getInsumos();
                         break;
                     case 3:
                         tvTitulo.setText("Gastos");
-                        getSucursales();
                         break;
                     default:
                 }
@@ -220,6 +226,13 @@ public class Home extends BaseActivity {
                     if (page0 == null) {
                         page0 = (FrameLayout) LayoutInflater.from(Home.this).inflate(R.layout.vp_indicadores, null);
                         tvTitulo.setText("Indicadores");
+                        tvFechaIndicadores = page0.findViewById(R.id.tvFecha);
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                        String hoy = sdf.format(new Date());
+                        tvFechaIndicadores.setText(hoy);
+                        tvFechaIndicadores.setOnClickListener(v -> {
+                            obtenerFecha(tvFechaIndicadores);
+                        });
                         adapterSucursales1 = new AdapterSucursales(Home.this, android.R.layout.simple_spinner_item, listaSucursales);
                         spSucursal1 = page0.findViewById(R.id.spSucursal);
                         spSucursal1.setAdapter(adapterSucursales1);
@@ -234,7 +247,23 @@ public class Home extends BaseActivity {
 
                             }
                         });
-
+                        tv_total_gasto_fijo = page0.findViewById(R.id.tv_total_gasto_fijo);
+                        tv_total_gasto_personal = page0.findViewById(R.id.tv_total_gasto_personal);
+                        tv_total_gasto_cocina = page0.findViewById(R.id.tv_total_gasto_cocina);
+                        tv_total_gasto_barra = page0.findViewById(R.id.tv_total_gasto_barra);
+                        tv_total_gastos = page0.findViewById(R.id.tv_total_gastos);
+                        tv_total_venta_barra = page0.findViewById(R.id.tv_total_venta_barra);
+                        tv_total_venta_cocina = page0.findViewById(R.id.tv_total_venta_cocina);
+                        tv_total_venta = page0.findViewById(R.id.tv_total_venta);
+                        getSucursales(adapterSucursales1);
+                        getIndicadores(tvFechaIndicadores.getText().toString(), sucursalSelected);
+                        btnFiltro = page0.findViewById(R.id.btnFiltro);
+                        btnFiltro.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                getIndicadores(tvFechaIndicadores.getText().toString(), sucursalSelected);
+                            }
+                        });
                     }
                     page = page0;
                     break;
@@ -242,14 +271,37 @@ public class Home extends BaseActivity {
                     if (page1 == null) {
                         page1 = (FrameLayout) LayoutInflater.from(Home.this).inflate(R.layout.vp_ventas, null);
                         tvTitulo.setText("Venta");
+                        adapterSucursales2 = new AdapterSucursales(Home.this, android.R.layout.simple_spinner_item, listaSucursales);
+                        spSucursal2 = page1.findViewById(R.id.spSucursal);
+                        spSucursal2.setAdapter(adapterSucursales2);
+                        spSucursal2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                            @Override
+                            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                sucursalSelected = listaSucursales.get(spSucursal2.getSelectedItemPosition()).id;
+                            }
+
+                            @Override
+                            public void onNothingSelected(AdapterView<?> parent) {
+
+                            }
+                        });
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                        String hoy = sdf.format(new Date());
+                        tvFechaVentaI = page1.findViewById(R.id.tvFechaI);
+                        tvFechaVentaI.setText(hoy);
+                        tvFechaVentaI.setOnClickListener(v -> obtenerFecha(tvFechaVentaI));
+                        tvFechaVentaF = page1.findViewById(R.id.tvFechaF);
+                        tvFechaVentaF.setText(hoy);
+                        tvFechaVentaF.setOnClickListener(v -> obtenerFecha(tvFechaVentaF));
                         brnVPagado = page1.findViewById(R.id.brnVPagado);
                         brnVPagado.setOnClickListener(v -> cargarVenta("1"));
                         btnVNoPagado = page1.findViewById(R.id.btnVNoPagado);
                         btnVNoPagado.setOnClickListener(v -> cargarVenta("0"));
                         grafica = page1.findViewById(R.id.grafica1);
                         nombreMarca = new ArrayList<>();
+                        fechaVenta = new ArrayList<>();
                         barChart = page1.findViewById(R.id.grafica2);
-                        addDataSet2();
+                        getSucursales(adapterSucursales2);
                     }
                     page = page1;
                     break;
@@ -305,6 +357,7 @@ public class Home extends BaseActivity {
                             }
                         });
                         rvInventario.setAdapter(adapterInventario);
+                        getSucursales(adapterSucursales3);
                     }
                     page = page2;
                     break;
@@ -343,13 +396,13 @@ public class Home extends BaseActivity {
                         btnGCocina.setOnClickListener(v -> cargarGastos("3"));
                         btnGBarra = page3.findViewById(R.id.btnGBarra);
                         btnGBarra.setOnClickListener(v -> cargarGastos("4"));
-                        adapterSucursales2 = new AdapterSucursales(Home.this, android.R.layout.simple_spinner_item, listaSucursales);
-                        spSucursal2 = page3.findViewById(R.id.spSucursal);
-                        spSucursal2.setAdapter(adapterSucursales2);
-                        spSucursal2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        adapterSucursales4 = new AdapterSucursales(Home.this, android.R.layout.simple_spinner_item, listaSucursales);
+                        spSucursal4 = page3.findViewById(R.id.spSucursal);
+                        spSucursal4.setAdapter(adapterSucursales4);
+                        spSucursal4.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                             @Override
                             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                sucursalSelected = listaSucursales.get(spSucursal2.getSelectedItemPosition()).id;
+                                sucursalSelected = listaSucursales.get(spSucursal4.getSelectedItemPosition()).id;
                             }
 
                             @Override
@@ -357,7 +410,7 @@ public class Home extends BaseActivity {
 
                             }
                         });
-
+                        getSucursales(adapterSucursales4);
                     }
                     page = page3;
                     break;
@@ -459,10 +512,12 @@ public class Home extends BaseActivity {
                 btnVNoPagado.setTextColor(Color.parseColor("#ffffff"));
                 break;
         }
+        getVentas(tvFechaVentaI.getText().toString(), tvFechaVentaF.getText().toString(), pagado, sucursalSelected);
+        getVentasArea(tvFechaVentaI.getText().toString(), tvFechaVentaF.getText().toString(), pagado, sucursalSelected);
     }
 
     public void getGastos(String fechaInicio, String fechaFin, String tipo, String sucursal) {
-
+        progress.show();
         Call<JsonObject> serviceDownload = retrofit.create(UrlInterface.class).getGastosApi(sesion.getToken(), fechaInicio, fechaFin, tipo, sucursal);
         serviceDownload.enqueue(new Callback<JsonObject>() {
             @Override
@@ -491,26 +546,33 @@ public class Home extends BaseActivity {
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
+                                progress.dismiss();
                                 return;
                             } catch (Exception e) {
                                 Log.e("err", e.toString());
+                                progress.dismiss();
                             }
                         } else {
+                            progress.dismiss();
                             Toast.makeText(Home.this, "Gastos.- Sin datos", Toast.LENGTH_LONG).show();
                         }
                     } else {
+                        progress.dismiss();
                         Toast.makeText(Home.this, "Gastos.- Ocurrio un error", Toast.LENGTH_LONG).show();
                     }
                 }
                 if (response.code() == 400) {
+                    progress.dismiss();
                     Toast.makeText(Home.this, "Gastos.- Sin datos", Toast.LENGTH_LONG).show();
                 } else {
+                    progress.dismiss();
                     Toast.makeText(Home.this, "Gastos.- No se pudo conectar con el servidor", Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
+                progress.dismiss();
                 Toast.makeText(Home.this, "Gastos.- No se pudo conectar con el servidor, revise su conexion a internet", Toast.LENGTH_LONG).show();
             }
         });
@@ -518,6 +580,7 @@ public class Home extends BaseActivity {
     }
 
     public void getInventario(String insumo, String area, String sucursal) {
+        progress.show();
         Call<JsonObject> serviceDownload = retrofit.create(UrlInterface.class).getInventarioApi(sesion.getToken(), insumo, area, sucursal);
         serviceDownload.enqueue(new Callback<JsonObject>() {
             @Override
@@ -546,34 +609,43 @@ public class Home extends BaseActivity {
                                     adapterInventario.notifyDataSetChanged();
                                 } catch (JSONException e) {
                                     e.printStackTrace();
+                                    progress.dismiss();
                                 }
+                                progress.dismiss();
                                 return;
                             } catch (Exception e) {
+                                progress.dismiss();
                                 Log.e("err", e.toString());
                             }
                         } else {
+                            progress.dismiss();
                             Toast.makeText(Home.this, "Inventario.- Sin datos", Toast.LENGTH_LONG).show();
                         }
                     } else {
+                        progress.dismiss();
                         Toast.makeText(Home.this, "Inventario.- Ocurrio un error", Toast.LENGTH_LONG).show();
                     }
                 }
                 if (response.code() == 400) {
+                    progress.dismiss();
                     Toast.makeText(Home.this, "Inventario.- Sin datos", Toast.LENGTH_LONG).show();
                 } else {
+                    progress.dismiss();
                     Toast.makeText(Home.this, "Inventario.- No se pudo conectar con el servidor", Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
+                progress.dismiss();
                 Toast.makeText(Home.this, "Inventario.- No se pudo conectar con el servidor, revise su conexion a internet", Toast.LENGTH_LONG).show();
             }
         });
 
     }
 
-    public void getSucursales() {
+    public void getSucursales(AdapterSucursales adapterSucursales) {
+        progress.show();
         Call<JsonObject> serviceDownload = retrofit.create(UrlInterface.class).getSucursalesApi(sesion.getToken());
         serviceDownload.enqueue(new Callback<JsonObject>() {
             @Override
@@ -593,29 +665,32 @@ public class Home extends BaseActivity {
                                     String nombre = data.getJSONObject(i).getString("nombre");
                                     listaSucursales.add(new ListaSucursales(id, nombre));
                                 }
-                                adapterSucursales1.notifyDataSetChanged();
-                                adapterSucursales2.notifyDataSetChanged();
-                                adapterSucursales3.notifyDataSetChanged();
+                                adapterSucursales.notifyDataSetChanged();
                             } catch (JSONException e) {
                                 e.printStackTrace();
+                                progress.dismiss();
                             }
                         } else {
                             Toast.makeText(Home.this, "Home.- Ocurrio un error", Toast.LENGTH_LONG).show();
                         }
+                        progress.dismiss();
                         return;
                     }
                 }
+                progress.dismiss();
                 Toast.makeText(Home.this, "2.- Home.- No se pudo conectar con el servidor", Toast.LENGTH_LONG).show();
             }
 
             @Override
             public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
+                progress.dismiss();
                 Toast.makeText(Home.this, "Home.- No se pudo conectar con el servidor, revise su conexion a internet", Toast.LENGTH_LONG).show();
             }
         });
     }
 
     public void getInsumos() {
+        progress.show();
         Call<JsonObject> serviceDownload = retrofit.create(UrlInterface.class).getInsumosApi(sesion.getToken());
         serviceDownload.enqueue(new Callback<JsonObject>() {
             @Override
@@ -638,24 +713,30 @@ public class Home extends BaseActivity {
                                 adapterProductos.notifyDataSetChanged();
                             } catch (JSONException e) {
                                 e.printStackTrace();
+                                progress.dismiss();
                             }
                         } else {
+                            progress.dismiss();
                             Toast.makeText(Home.this, "Home.- Ocurrio un error", Toast.LENGTH_LONG).show();
                         }
+                        progress.dismiss();
                         return;
                     }
                 }
+                progress.dismiss();
                 Toast.makeText(Home.this, "2.- Home.- No se pudo conectar con el servidor", Toast.LENGTH_LONG).show();
             }
 
             @Override
             public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
+                progress.dismiss();
                 Toast.makeText(Home.this, "Home.- No se pudo conectar con el servidor, revise su conexion a internet", Toast.LENGTH_LONG).show();
             }
         });
     }
 
     public void getVentas(String fechaI, String fechaF, String pagado, String sucursal) {
+        progress.show();
         Call<JsonObject> serviceDownload = retrofit.create(UrlInterface.class).getVentasApi(sesion.getToken(), fechaI, fechaF, pagado, sucursal);
         serviceDownload.enqueue(new Callback<JsonObject>() {
             @Override
@@ -683,7 +764,6 @@ public class Home extends BaseActivity {
                                         String tipo_pago = data.getJSONObject(i).getString("tipo_pago");
                                         String hora_venta = data.getJSONObject(i).getString("hora_venta");
                                         String terminado = data.getJSONObject(i).getString("terminado");
-
                                         //nombreMarca.add(i, id + ".-" + fecha_venta);
                                         listaVentas.add(new ListaVentas(id, monto_total, mesa, fecha_venta, pagado, usuario_id, usuario, tipo_pago, hora_venta, terminado));
                                     }
@@ -691,7 +771,6 @@ public class Home extends BaseActivity {
                                     for (int y = 0; y < data2.length(); y++) {
                                         String total = data2.getJSONObject(y).getString("total");
                                         String fecha = data2.getJSONObject(y).getString("fecha");
-
                                         nombreMarca.add(fecha);
                                         listaVentasDias.add(new ListaVentasDias(total, fecha));
                                     }
@@ -699,34 +778,43 @@ public class Home extends BaseActivity {
                                     addDataSet();
                                 } catch (JSONException e) {
                                     e.printStackTrace();
+                                    progress.dismiss();
                                 }
+                                progress.dismiss();
                                 return;
                             } catch (Exception e) {
                                 Log.e("err", e.toString());
+                                progress.dismiss();
                             }
                         } else {
                             Toast.makeText(Home.this, "Venta.- Sin datos", Toast.LENGTH_LONG).show();
+                            progress.dismiss();
                         }
                     } else {
+                        progress.dismiss();
                         Toast.makeText(Home.this, "Venta.- Ocurrio un error", Toast.LENGTH_LONG).show();
                     }
                 }
                 if (response.code() == 400) {
+                    progress.dismiss();
                     Toast.makeText(Home.this, "Venta.- Sin datos", Toast.LENGTH_LONG).show();
                 } else {
+                    progress.dismiss();
                     Toast.makeText(Home.this, "Venta.- No se pudo conectar con el servidor", Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
+                progress.dismiss();
                 Toast.makeText(Home.this, "Venta.- No se pudo conectar con el servidor, revise su conexion a internet", Toast.LENGTH_LONG).show();
             }
         });
 
     }
 
-    public void getVentasArea(String fechaI, String fechaF, String pagado, String sucursal, String area_id) {
+    public void getVentasArea(String fechaI, String fechaF, String pagado, String sucursal) {
+        progress.show();
         Call<JsonObject> serviceDownload = retrofit.create(UrlInterface.class).getVentasDivididasApi(sesion.getToken(), fechaI, fechaF, pagado, sucursal);
         serviceDownload.enqueue(new Callback<JsonObject>() {
             @Override
@@ -736,50 +824,109 @@ public class Home extends BaseActivity {
                     if (response.body() != null && response.body().has("success")) {
                         if (response.body().get("success").getAsInt() == 1) {
                             try {
-                                listaVentasAreas.clear();
+                                listaVBarraCocinas.clear();
+                                fechaVenta.clear();
                                 JSONObject jsonResponse = null;
                                 try {
                                     jsonResponse = new JSONObject(response.body() + "");
                                     Log.e("Respuesta", jsonResponse + "");
-                                    JSONArray data = jsonResponse.getJSONArray("content");
+                                    JSONArray data = jsonResponse.getJSONArray("totales");
                                     for (int i = 0; i < data.length(); i++) {
                                         String fecha = data.getJSONObject(i).getString("fecha");
-                                        String producto_id = data.getJSONObject(i).getString("producto_id");
-                                        String producto = data.getJSONObject(i).getString("producto");
-                                        String total = data.getJSONObject(i).getString("total");
-                                        String area = data.getJSONObject(i).getString("area");
-                                        if(area.equals(area_id)) {
-                                            listaVentasAreas.add(new ListaVentasArea(fecha, producto_id, producto, total, area));
-                                        }
+                                        String totalCocina = data.getJSONObject(i).getString("totalVentasCocina");
+                                        String totalBarra = data.getJSONObject(i).getString("totalVentasBarra");
+                                        listaVBarraCocinas.add(new ListaVBarraCocina(fecha, totalBarra, totalCocina));
+                                        fechaVenta.add(fecha);
                                     }
-                                    Log.e("Respuesta", listaVentasAreas.size() + " .- lista de ventas por area");
+                                    Log.e("Respuesta", listaVBarraCocinas.size() + " .- lista de ventas por area");
+                                    addDataSet2();
                                 } catch (JSONException e) {
                                     e.printStackTrace();
+                                    progress.dismiss();
                                 }
+                                progress.dismiss();
                                 return;
                             } catch (Exception e) {
+                                progress.dismiss();
                                 Log.e("err", e.toString());
                             }
                         } else {
+                            progress.dismiss();
                             Toast.makeText(Home.this, "Venta.- Sin datos", Toast.LENGTH_LONG).show();
                         }
                     } else {
+                        progress.dismiss();
                         Toast.makeText(Home.this, "Venta.- Ocurrio un error", Toast.LENGTH_LONG).show();
                     }
                 }
                 if (response.code() == 400) {
+                    progress.dismiss();
                     Toast.makeText(Home.this, "Venta.- Sin datos", Toast.LENGTH_LONG).show();
                 } else {
+                    progress.dismiss();
                     Toast.makeText(Home.this, "Venta.- No se pudo conectar con el servidor", Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
+                progress.dismiss();
                 Toast.makeText(Home.this, "Venta.- No se pudo conectar con el servidor, revise su conexion a internet", Toast.LENGTH_LONG).show();
             }
         });
 
+    }
+
+    public void getIndicadores(String fecha, String sucursal) {
+        progress.show();
+        Call<JsonObject> serviceDownload = retrofit.create(UrlInterface.class).getTotalesApi(sesion.getToken(), fecha, sucursal);
+        serviceDownload.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
+                if (response.code() >= 200 && response.code() < 300) {
+                    if (response.body() != null && response.body().has("success")) {
+                        if (response.body().get("success").getAsInt() == 1) {
+                            Log.e("Respuesta", response.body() + "");
+                            float totalVentasBarra = response.body().get("totalVentasBarra").getAsFloat();
+                            float totalVentasCocina = response.body().get("totalVentasCocina").getAsFloat();
+                            float totalGastoFijo = response.body().get("totalGastoFijo").getAsFloat();
+                            float totalGastoPersonal = response.body().get("totalGastoPersonal").getAsFloat();
+                            float totalGastoCocina = response.body().get("totalGastoCocina").getAsFloat();
+                            float totalGastoBarra = response.body().get("totalGastoBarra").getAsFloat();
+                            tv_total_gasto_fijo.setText("$" + totalGastoFijo + "");
+                            tv_total_gasto_personal.setText("$" + totalGastoPersonal + "");
+                            tv_total_gasto_cocina.setText("$" + totalGastoCocina + "");
+                            tv_total_gasto_barra.setText("$" + totalGastoBarra + "");
+                            float totalGastos = (totalGastoFijo + totalGastoPersonal + totalGastoCocina + totalGastoBarra);
+                            tv_total_gastos.setText("Gastos totales $" + totalGastos + "");
+                            tv_total_venta_barra.setText("$" + totalVentasBarra + "");
+                            tv_total_venta_cocina.setText("$" + totalVentasCocina + "");
+                            float totalVentas = (totalVentasBarra + totalVentasCocina);
+                            tv_total_venta.setText("Ventas totales $" + totalVentas + "");
+                        } else {
+                            tv_total_gasto_fijo.setText("$0.0");
+                            tv_total_gasto_personal.setText("$0.0");
+                            tv_total_gasto_cocina.setText("$0.0");
+                            tv_total_gasto_barra.setText("$0.0");
+                            tv_total_gastos.setText("Gastos totales $0.0");
+                            tv_total_venta_barra.setText("$0.0");
+                            tv_total_venta_cocina.setText("$0.0");
+                            tv_total_venta.setText("Ventas totales $0.0");
+                        }
+                        progress.dismiss();
+                        return;
+                    }
+                }
+                progress.dismiss();
+                Toast.makeText(Home.this, "2.- Home.- No se pudo conectar con el servidor", Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<JsonObject> call, @NonNull Throwable t) {
+                progress.dismiss();
+                Toast.makeText(Home.this, "Home.- No se pudo conectar con el servidor, revise su conexion a internet", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     public void obtenerFecha(TextView tvFecha) {
@@ -795,19 +942,17 @@ public class Home extends BaseActivity {
     }
 
     private void addDataSet() {
-        Log.e("Resultado", nombreMarca + " .- tamaño nombreMarca");
-        Log.e("Resultado", listaVentasDias + " .- tamaño listaVentasDias");
+        grafica.clear();
         grafica.setMaxVisibleValueCount(listaVentasDias.size());
         ArrayList<BarEntry> precio = new ArrayList<>();
         for (int i = 0; i < listaVentasDias.size(); i++) {
             precios = new float[listaVentasDias.size()];
-
             float entrada = Float.parseFloat("" + listaVentasDias.get(i).monto_total);
             precios[i] = entrada;
             precio.add(new BarEntry(i, entrada));
         }
 
-        BarDataSet dataSet = new BarDataSet(precio, "Venta");
+        BarDataSet dataSet = new BarDataSet(precio, "Día de Venta");
 
         ArrayList<Integer> colors = new ArrayList<>();
         int color1 = getResources().getColor(R.color.graficaReporteAzulMar);
@@ -831,11 +976,11 @@ public class Home extends BaseActivity {
         left.setEnabled(true);
 
         XAxis xaxis = grafica.getXAxis();
-        xaxis.setDrawGridLines(false);
+        xaxis.setDrawGridLines(true);
         xaxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xaxis.setGranularity(1f);
         xaxis.setDrawLabels(true);
-        xaxis.setDrawAxisLine(false);
+        xaxis.setDrawAxisLine(true);
         xaxis.setValueFormatter(new IndexAxisValueFormatter(nombreMarca));
         xaxis.setGridColor(R.color.gris);
         xaxis.setTextColor(R.color.gris);
@@ -855,10 +1000,9 @@ public class Home extends BaseActivity {
         grafica.invalidate();
         grafica.setDescription(null);
 
-
     }
 
-    public void addDataSet2(){
+    public void addDataSet2() {
         barChart.setDrawBarShadow(false);
         barChart.setDrawValueAboveBar(true);
         barChart.setDescription(null);
@@ -869,12 +1013,13 @@ public class Home extends BaseActivity {
         XAxis xl = barChart.getXAxis();
         xl.setGranularity(1f);
         xl.setCenterAxisLabels(true);
-        xl.setValueFormatter(new IndexAxisValueFormatter() {
+        xl.setValueFormatter(new IndexAxisValueFormatter(fechaVenta));
+        /*xl.setValueFormatter(new IndexAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
                 return String.valueOf((int) value);
             }
-        });
+        });*/
 
         YAxis leftAxis = barChart.getAxisLeft();
         leftAxis.setValueFormatter(new IndexAxisValueFormatter() {
@@ -894,28 +1039,34 @@ public class Home extends BaseActivity {
         float barWidth = 0.46f; // x2 dataset
         // (0.46 + 0.02) * 2 + 0.04 = 1.00 -> interval per "group"
 
-        int startYear = 1980;
-        int endYear = 1985;
+        //int startYear = 1980;
+        //int endYear = 1985;
 
 
         List<BarEntry> yVals1 = new ArrayList<>();
         List<BarEntry> yVals2 = new ArrayList<>();
 
 
-        for (int i = startYear; i < endYear; i++) {
-            yVals1.add(new BarEntry(i, 0.4f));
+        for (int i = 0; i < listaVBarraCocinas.size(); i++) {
+            if(listaVBarraCocinas.get(i).totalBarra.equals("0.0f")){
+                yVals1.add(new BarEntry(i, Float.parseFloat(listaVBarraCocinas.get(i).totalCocina)));
+                yVals2.add(new BarEntry(i, 50.0f));
+            }else{
+                if(listaVBarraCocinas.get(i).totalCocina.equals("0.0f")){
+                    yVals1.add(new BarEntry(i, 50.0f));
+                    yVals2.add(new BarEntry(i, Float.parseFloat(listaVBarraCocinas.get(i).totalBarra)));
+                }else{
+                    yVals1.add(new BarEntry(i, Float.parseFloat(listaVBarraCocinas.get(i).totalCocina)));
+                    yVals2.add(new BarEntry(i, Float.parseFloat(listaVBarraCocinas.get(i).totalBarra)));
+                }
+            }
         }
-
-        for (int i = startYear; i < endYear; i++) {
-            yVals2.add(new BarEntry(i, 0.7f));
-        }
-
 
         BarDataSet set1, set2;
 
         if (barChart.getData() != null && barChart.getData().getDataSetCount() > 0) {
-            set1 = (BarDataSet)barChart.getData().getDataSetByIndex(0);
-            set2 = (BarDataSet)barChart.getData().getDataSetByIndex(1);
+            set1 = (BarDataSet) barChart.getData().getDataSetByIndex(0);
+            set2 = (BarDataSet) barChart.getData().getDataSetByIndex(1);
             set1.setValues(yVals1);
             set2.setValues(yVals2);
             barChart.getData().notifyDataChanged();
@@ -937,8 +1088,8 @@ public class Home extends BaseActivity {
         }
 
         barChart.getBarData().setBarWidth(barWidth);
-        barChart.getXAxis().setAxisMinValue(startYear);
-        barChart.groupBars(startYear, groupSpace, barSpace);
+        barChart.getXAxis().setAxisMinValue(0);
+        barChart.groupBars(0, groupSpace, barSpace);
         barChart.invalidate();
     }
 }

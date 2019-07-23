@@ -55,4 +55,9 @@ public interface UrlInterface {
                                   @Query("pagado") String pagado,
                                   @Query("sucursal") String sucursal);
 
+    @GET("getTotalesApi/")
+    Call<JsonObject> getTotalesApi(@Header("Authorization") String authorization,
+                                      @Query("fecha") String fecha,
+                                      @Query("sucursal") String sucursal);
+
 }
