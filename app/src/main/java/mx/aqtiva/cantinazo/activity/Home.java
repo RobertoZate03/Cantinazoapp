@@ -80,7 +80,7 @@ public class Home extends BaseActivity {
     RecyclerView rvGastos, rvInventario;
     AdapterGastos adapterGastos;
     AdapterInventario adapterInventario;
-    TextView tvFecha, tvFechaVentaI, tvFechaVentaF, tvFechaIndicadores;
+    TextView tvFechaVentaI, tvFechaVentaF, tvFechaIndicadoresI, tvFechaIndicadoresF, tvFechaGastoI, tvFechaGastoF;
     Spinner spSucursal1, spSucursal2, spSucursal3, spSucursal4, spProductos;
     AdapterSucursales adapterSucursales1, adapterSucursales2, adapterSucursales3, adapterSucursales4;
     AdapterProductos adapterProductos;
@@ -89,7 +89,6 @@ public class Home extends BaseActivity {
     ArrayList<ListaInventario> listaInventarios = new ArrayList<>();
     ArrayList<ListaVentas> listaVentas = new ArrayList<>();
     ArrayList<ListaVentasDias> listaVentasDias = new ArrayList<>();
-    ArrayList<ListaVentasArea> listaVentasAreas = new ArrayList<>();
     String sucursalSelected = "0";
     String insumoSelected = "0";
     float totalVenta = 0;
@@ -138,6 +137,16 @@ public class Home extends BaseActivity {
             finish();
         });
         btn_menu.setVisibility(View.GONE);
+        btn_mesas = findViewById(R.id.btn_mesas);
+        btn_mesas.setVisibility(View.VISIBLE);
+        btn_mesas.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Home.this,
+                        Mesas.class);
+                startActivity(i);
+            }
+        });
         bottomNavigationView = findViewById(R.id.navigationView);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
@@ -226,12 +235,17 @@ public class Home extends BaseActivity {
                     if (page0 == null) {
                         page0 = (FrameLayout) LayoutInflater.from(Home.this).inflate(R.layout.vp_indicadores, null);
                         tvTitulo.setText("Indicadores");
-                        tvFechaIndicadores = page0.findViewById(R.id.tvFecha);
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                         String hoy = sdf.format(new Date());
-                        tvFechaIndicadores.setText(hoy);
-                        tvFechaIndicadores.setOnClickListener(v -> {
-                            obtenerFecha(tvFechaIndicadores);
+                        tvFechaIndicadoresI = page0.findViewById(R.id.tvFechaI);
+                        tvFechaIndicadoresI.setText(hoy);
+                        tvFechaIndicadoresI.setOnClickListener(v -> {
+                            obtenerFecha(tvFechaIndicadoresI);
+                        });
+                        tvFechaIndicadoresF = page0.findViewById(R.id.tvFechaF);
+                        tvFechaIndicadoresF.setText(hoy);
+                        tvFechaIndicadoresF.setOnClickListener(v -> {
+                            obtenerFecha(tvFechaIndicadoresF);
                         });
                         adapterSucursales1 = new AdapterSucursales(Home.this, android.R.layout.simple_spinner_item, listaSucursales);
                         spSucursal1 = page0.findViewById(R.id.spSucursal);
@@ -256,14 +270,9 @@ public class Home extends BaseActivity {
                         tv_total_venta_cocina = page0.findViewById(R.id.tv_total_venta_cocina);
                         tv_total_venta = page0.findViewById(R.id.tv_total_venta);
                         getSucursales(adapterSucursales1);
-                        getIndicadores(tvFechaIndicadores.getText().toString(), sucursalSelected);
+                        getIndicadores(tvFechaIndicadoresI.getText().toString(), tvFechaIndicadoresF.getText().toString(), sucursalSelected);
                         btnFiltro = page0.findViewById(R.id.btnFiltro);
-                        btnFiltro.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                getIndicadores(tvFechaIndicadores.getText().toString(), sucursalSelected);
-                            }
-                        });
+                        btnFiltro.setOnClickListener(v -> getIndicadores(tvFechaIndicadoresI.getText().toString(), tvFechaIndicadoresF.getText().toString(), sucursalSelected));
                     }
                     page = page0;
                     break;
@@ -382,12 +391,15 @@ public class Home extends BaseActivity {
                             }
                         });
                         rvGastos.setAdapter(adapterGastos);
-                        tvFecha = page3.findViewById(R.id.tvFecha);
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                         String hoy = sdf.format(new Date());
-                        tvFecha.setText(hoy);
-                        tvFecha.setOnClickListener(v -> obtenerFecha(tvFecha));
-                        getGastos(tvFecha.getText().toString(), tvFecha.getText().toString(), "1", "2");
+                        tvFechaGastoI = page3.findViewById(R.id.tvFechaI);
+                        tvFechaGastoI.setText(hoy);
+                        tvFechaGastoI.setOnClickListener(v -> obtenerFecha(tvFechaGastoI));
+                        tvFechaGastoF = page3.findViewById(R.id.tvFechaF);
+                        tvFechaGastoF.setText(hoy);
+                        tvFechaGastoF.setOnClickListener(v -> obtenerFecha(tvFechaGastoF));
+                        getGastos(tvFechaGastoI.getText().toString(), tvFechaGastoF.getText().toString(), "1", "2");
                         btnGFijos = page3.findViewById(R.id.btnGFijos);
                         btnGFijos.setOnClickListener(v -> cargarGastos("1"));
                         btnGPersonal = page3.findViewById(R.id.btnGPersonal);
@@ -475,7 +487,7 @@ public class Home extends BaseActivity {
                 btnGBarra.setTextColor(Color.parseColor("#ffffff"));
                 break;
         }
-        getGastos(tvFecha.getText().toString(), tvFecha.getText().toString(), tipo, sucursalSelected);
+        getGastos(tvFechaGastoI.getText().toString(), tvFechaGastoF.getText().toString(), tipo, sucursalSelected);
     }
 
     private void cargarInventario(String area) {
@@ -736,7 +748,7 @@ public class Home extends BaseActivity {
     }
 
     public void getVentas(String fechaI, String fechaF, String pagado, String sucursal) {
-        Log.e("Respuesta ->",  "entra a get ventas");
+        Log.e("Respuesta ->", "entra a get ventas");
         progress.show();
         Call<JsonObject> serviceDownload = retrofit.create(UrlInterface.class).getVentasApi(sesion.getToken(), fechaI, fechaF, pagado, sucursal);
         serviceDownload.enqueue(new Callback<JsonObject>() {
@@ -750,6 +762,7 @@ public class Home extends BaseActivity {
                             try {
                                 listaVentas.clear();
                                 nombreMarca.clear();
+                                grafica.removeAllViews();
                                 JSONObject jsonResponse = null;
                                 try {
                                     jsonResponse = new JSONObject(response.body() + "");
@@ -828,6 +841,7 @@ public class Home extends BaseActivity {
                             try {
                                 listaVBarraCocinas.clear();
                                 fechaVenta.clear();
+                                barChart.removeAllViews();
                                 JSONObject jsonResponse = null;
                                 try {
                                     jsonResponse = new JSONObject(response.body() + "");
@@ -879,9 +893,9 @@ public class Home extends BaseActivity {
 
     }
 
-    public void getIndicadores(String fecha, String sucursal) {
+    public void getIndicadores(String fechaI,String fechaF, String sucursal) {
         progress.show();
-        Call<JsonObject> serviceDownload = retrofit.create(UrlInterface.class).getTotalesApi(sesion.getToken(), fecha, sucursal);
+        Call<JsonObject> serviceDownload = retrofit.create(UrlInterface.class).getTotalesApi(sesion.getToken(), fechaI, fechaF, sucursal);
         serviceDownload.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(@NonNull Call<JsonObject> call, @NonNull Response<JsonObject> response) {
@@ -944,8 +958,7 @@ public class Home extends BaseActivity {
     }
 
     private void addDataSet() {
-        Log.e("Res", "entra " +  listaVentasDias.size());
-        grafica.clear();
+        Log.e("Res", "entra " + listaVentasDias.size());
         grafica.setMaxVisibleValueCount(listaVentasDias.size());
         ArrayList<BarEntry> precio = new ArrayList<>();
         for (int i = 0; i < listaVentasDias.size(); i++) {

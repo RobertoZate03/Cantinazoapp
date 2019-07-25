@@ -24,16 +24,16 @@ public interface UrlInterface {
 
     @GET("getGastosApi/")
     Call<JsonObject> getGastosApi(@Header("Authorization") String authorization,
-                                 @Query("fecha_inicio") String fecha_inicio,
-                                 @Query("fecha_fin") String fecha_fin,
-                                 @Query("tipo") String tipo,
-                                 @Query("sucursal") String sucursal);
+                                  @Query("fecha_inicio") String fecha_inicio,
+                                  @Query("fecha_fin") String fecha_fin,
+                                  @Query("tipo") String tipo,
+                                  @Query("sucursal") String sucursal);
 
     @GET("getInventarioApi/")
     Call<JsonObject> getInventarioApi(@Header("Authorization") String authorization,
-                                  @Query("insumo") String insumo,
-                                  @Query("area") String area,
-                                  @Query("sucursal") String sucursal);
+                                      @Query("insumo") String insumo,
+                                      @Query("area") String area,
+                                      @Query("sucursal") String sucursal);
 
     @GET("getSucursalesApi/")
     Call<JsonObject> getSucursalesApi(@Header("Authorization") String authorization);
@@ -43,21 +43,28 @@ public interface UrlInterface {
 
     @GET("getVentasApi/")
     Call<JsonObject> getVentasApi(@Header("Authorization") String authorization,
-                                      @Query("fecha_inicio") String fecha_inicio,
-                                      @Query("fecha_fin") String fecha_fin,
-                                      @Query("pagado") String pagado,
-                                      @Query("sucursal") String sucursal);
-
-    @GET("getVentasDivididasApi/")
-    Call<JsonObject> getVentasDivididasApi(@Header("Authorization") String authorization,
                                   @Query("fecha_inicio") String fecha_inicio,
                                   @Query("fecha_fin") String fecha_fin,
                                   @Query("pagado") String pagado,
                                   @Query("sucursal") String sucursal);
 
+    @GET("getVentasDivididasApi/")
+    Call<JsonObject> getVentasDivididasApi(@Header("Authorization") String authorization,
+                                           @Query("fecha_inicio") String fecha_inicio,
+                                           @Query("fecha_fin") String fecha_fin,
+                                           @Query("pagado") String pagado,
+                                           @Query("sucursal") String sucursal);
+
     @GET("getTotalesApi/")
     Call<JsonObject> getTotalesApi(@Header("Authorization") String authorization,
-                                      @Query("fecha") String fecha,
-                                      @Query("sucursal") String sucursal);
+                                   @Query("fechaI") String fechaI,
+                                   @Query("fechaF") String fechaF,
+                                   @Query("sucursal") String sucursal);
+
+    @GET("getMesasApi/")
+    Call<JsonObject> getMesasApi(@Header("Authorization") String authorization,
+                                   @Query("fecha_inicio") String fechaI,
+                                   @Query("fecha_fin") String fechaF,
+                                   @Query("sucursal") String sucursal);
 
 }

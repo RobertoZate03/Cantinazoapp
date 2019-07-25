@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.Mesas">
+
+    <include layout="@layout/toolbar" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="56dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="30dp"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/negro" />
+
+            <Spinner
+                android:id="@+id/spSucursal"
+                style="@style/SpinnerTheme"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="20dp" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="10dp">
+
+                <TextView
+                    android:id="@+id/tvFechaI"
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp"
+                    android:background="@drawable/edittext_style2"
+                    android:ems="10"
+                    android:padding="10dp" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center|right"
+                    android:layout_marginRight="10dp"
+                    android:src="@drawable/icon1" />
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="20dp">
+
+                <TextView
+                    android:id="@+id/tvFechaF"
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp"
+                    android:background="@drawable/edittext_style2"
+                    android:ems="10"
+                    android:padding="10dp" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center|right"
+                    android:layout_marginRight="10dp"
+                    android:src="@drawable/icon1" />
+
+            </FrameLayout>
+
+            <Button
+                android:id="@+id/btnFiltro"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/btn_rojo_solid"
+                android:text="Filtrar"
+                android:textColor="@color/blanco" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/negro" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnActivos"
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_rojo_solid"
+                    android:text="Activos"
+                    android:textColor="@color/blanco" />
+
+                <Button
+                    android:id="@+id/btnPagados"
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_rojo_border"
+                    android:text="Pagados"
+                    android:textColor="@color/rojo" />
+            </LinearLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_activos"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_margin="10dp"
+                android:visibility="visible" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_pagados"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_margin="10dp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tv_total_efectivoA"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="30dp"
+                android:background="@drawable/btn_rojo_solid"
+                android:gravity="center"
+                android:text="Total en efectivo $1000.00"
+                android:textColor="@color/blanco"
+                android:textSize="18dp"
+                android:textStyle="normal"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tv_total_creditoA"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="30dp"
+                android:background="@drawable/btn_rojo_solid"
+                android:gravity="center"
+                android:text="Total en tarjeta $1000.00"
+                android:textColor="@color/blanco"
+                android:textSize="18dp"
+                android:textStyle="normal"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tv_total_debitoA"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="30dp"
+                android:background="@drawable/btn_rojo_solid"
+                android:gravity="center"
+                android:text="Total en tarjeta $1000.00"
+                android:textColor="@color/blanco"
+                android:textSize="18dp"
+                android:textStyle="normal"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tv_total_efectivoP"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="30dp"
+                android:background="@drawable/btn_rojo_solid"
+                android:gravity="center"
+                android:text="Total en efectivo $1000.00"
+                android:textColor="@color/blanco"
+                android:textSize="18dp"
+                android:textStyle="normal"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tv_total_creditoP"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="30dp"
+                android:background="@drawable/btn_rojo_solid"
+                android:gravity="center"
+                android:text="Total en tarjeta $1000.00"
+                android:textColor="@color/blanco"
+                android:textSize="18dp"
+                android:textStyle="normal"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tv_total_debitoP"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="30dp"
+                android:background="@drawable/btn_rojo_solid"
+                android:gravity="center"
+                android:text="Total en tarjeta $1000.00"
+                android:textColor="@color/blanco"
+                android:textSize="18dp"
+                android:textStyle="normal"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+</FrameLayout>
