@@ -10,8 +10,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class BaseActivity extends Activity {
 
-    //private final static String baseUrl = "https://cantinazo.mx/";//servidor
-    private final static String baseUrl = "http://192.168.100.35:8000/";//ip trabajo
+    private final static String baseUrl = "https://cantinazo.mx/";//servidor
+    //private final static String baseUrl = "http://172.20.10.4:8000/";//ip trabajo
     public final static String urlapp = baseUrl + "sistema/";
     protected Retrofit retrofit;
     public static TextView tvTitulo;

@@ -8,7 +8,6 @@ import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
 import android.text.style.StyleSpan;
-import android.text.style.UnderlineSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,7 +55,7 @@ public class AdapterGastos extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             sp = PreferenceManager.getDefaultSharedPreferences(contx);
             VHHeader VHheader = (VHHeader) holder;
             VHheader.tvMotivo.setText(currentItem.motivo);
-            VHheader.tvCantidad.setText(currentItem.cantidad);
+            VHheader.tvCantidad.setText("$" + currentItem.cantidad);
             if(list.size() == position + 1){
                 String tempString=currentItem.motivo;
                 SpannableString spanString = new SpannableString(tempString);
@@ -67,7 +66,7 @@ public class AdapterGastos extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 String tempString1=currentItem.cantidad;
                 SpannableString spanString1 = new SpannableString(tempString1);
                 spanString1.setSpan(new StyleSpan(Typeface.BOLD), 0, spanString1.length(), 0);
-                VHheader.tvCantidad.setText(spanString1);
+                VHheader.tvCantidad.setText("$" + spanString1);
                 VHheader.tvCantidad.setTextColor(Color.parseColor("#000000"));
             }
             VHheader.itemView.setOnClickListener(v -> {

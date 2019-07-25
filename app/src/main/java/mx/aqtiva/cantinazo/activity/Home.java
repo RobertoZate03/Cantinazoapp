@@ -64,7 +64,6 @@ import mx.aqtiva.cantinazo.listas.ListaProductos;
 import mx.aqtiva.cantinazo.listas.ListaSucursales;
 import mx.aqtiva.cantinazo.listas.ListaVBarraCocina;
 import mx.aqtiva.cantinazo.listas.ListaVentas;
-import mx.aqtiva.cantinazo.listas.ListaVentasArea;
 import mx.aqtiva.cantinazo.listas.ListaVentasDias;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -114,7 +113,7 @@ public class Home extends BaseActivity {
     BarChart grafica, barChart;
 
     TextView tv_total_gasto_fijo, tv_total_gasto_personal, tv_total_gasto_cocina, tv_total_gasto_barra, tv_total_gastos, tv_total_venta_barra, tv_total_venta_cocina, tv_total_venta;
-
+    Intent i;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -127,6 +126,7 @@ public class Home extends BaseActivity {
         progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progress.setCancelable(true);
         tvTitulo = findViewById(R.id.tv_titulo);
+        tvTitulo.setText("Indicadores");
         btn_accion = findViewById(R.id.btn_accion);
         btn_menu = findViewById(R.id.btn_menu);
         btn_accion.setOnClickListener(v -> {
@@ -136,31 +136,42 @@ public class Home extends BaseActivity {
             startActivity(i);
             finish();
         });
+        btn_menu.setOnClickListener(v -> {
+            Intent i = new Intent(Home.this,
+                    Home.class);
+            startActivity(i);
+            finish();
+        });
         btn_menu.setVisibility(View.GONE);
         btn_mesas = findViewById(R.id.btn_mesas);
         btn_mesas.setVisibility(View.VISIBLE);
-        btn_mesas.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(Home.this,
-                        Mesas.class);
-                startActivity(i);
-            }
+        btn_mesas.setOnClickListener(v -> {
+            Intent i = new Intent(Home.this,
+                    Mesas.class);
+            startActivity(i);
         });
         bottomNavigationView = findViewById(R.id.navigationView);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.navigation_indicadores:
+                    tvTitulo.setText("Indicadores");
                     viewPager.setCurrentItem(0);
+                    btn_menu.setVisibility(View.GONE);
                     break;
                 case R.id.navigation_ventas:
+                    tvTitulo.setText("Venta");
                     viewPager.setCurrentItem(1);
+                    btn_menu.setVisibility(View.VISIBLE);
                     break;
                 case R.id.navigation_inventario:
+                    tvTitulo.setText("Inventario");
                     viewPager.setCurrentItem(2);
+                    btn_menu.setVisibility(View.VISIBLE);
                     break;
                 case R.id.navigation_gastos:
+                    tvTitulo.setText("Gastos");
                     viewPager.setCurrentItem(3);
+                    btn_menu.setVisibility(View.VISIBLE);
                     break;
             }
             return true;
@@ -959,8 +970,10 @@ public class Home extends BaseActivity {
 
     private void addDataSet() {
         Log.e("Res", "entra " + listaVentasDias.size());
+        grafica.removeAllViews();
         grafica.setMaxVisibleValueCount(listaVentasDias.size());
         ArrayList<BarEntry> precio = new ArrayList<>();
+        precio.clear();
         for (int i = 0; i < listaVentasDias.size(); i++) {
             precios = new float[listaVentasDias.size()];
             float entrada = Float.parseFloat("" + listaVentasDias.get(i).monto_total);
@@ -1056,6 +1069,8 @@ public class Home extends BaseActivity {
 
         List<BarEntry> yVals1 = new ArrayList<>();
         List<BarEntry> yVals2 = new ArrayList<>();
+        yVals1.clear();
+        yVals2.clear();
 
 
         for (int i = 0; i < listaVBarraCocinas.size(); i++) {
@@ -1093,4 +1108,76 @@ public class Home extends BaseActivity {
         barChart.groupBars(0, groupSpace, barSpace);
         barChart.invalidate();
     }
+
+    public void addDataSet3() {
+        grafica.setDrawBarShadow(true);
+        grafica.setDrawValueAboveBar(true);
+        grafica.setDescription(null);
+        grafica.setMaxVisibleValueCount(50);
+        grafica.setPinchZoom(true);
+        grafica.setDrawGridBackground(true);
+
+        XAxis xaxis = grafica.getXAxis();
+        xaxis.setDrawGridLines(true);
+        xaxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xaxis.setGranularity(0.68f);
+        xaxis.setDrawLabels(true);
+        xaxis.setCenterAxisLabels(false);
+        xaxis.setDrawAxisLine(true);
+        xaxis.setValueFormatter(new IndexAxisValueFormatter(nombreMarca));
+        xaxis.setGridColor(R.color.gris);
+        xaxis.setTextColor(R.color.gris);
+
+        YAxis leftAxis = grafica.getAxisLeft();
+        leftAxis.setValueFormatter(new IndexAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                return String.valueOf((int) value);
+            }
+        });
+        leftAxis.setDrawGridLines(false);
+        leftAxis.setSpaceTop(30f);
+        leftAxis.setAxisMinValue(0f); // this replaces setStartAtZero(true
+        grafica.getAxisRight().setEnabled(false);
+
+        //data
+        float groupSpace = 0.04f;
+        float barSpace = 0.02f; // x2 dataset
+        float barWidth = 0.30f; // x2 dataset
+
+        List<BarEntry> yVals1 = new ArrayList<>();
+        yVals1.clear();
+
+
+        for (int i = 0; i < listaVentasDias.size(); i++) {
+            yVals1.add(new BarEntry(i, Float.parseFloat(listaVentasDias.get(i).monto_total)));
+        }
+
+        BarDataSet set1;
+
+        if (barChart.getData() != null && barChart.getData().getDataSetCount() > 0) {
+            set1 = (BarDataSet) barChart.getData().getDataSetByIndex(0);
+            set1.setValues(yVals1);
+            barChart.getData().notifyDataChanged();
+            barChart.notifyDataSetChanged();
+        } else {
+            int color1 = getResources().getColor(R.color.graficaReporteAzulMar);
+            int color2 = getResources().getColor(R.color.graficaReporteMorado);
+            set1 = new BarDataSet(yVals1, "Ventas");
+            set1.setColor(color1);
+
+            ArrayList<IBarDataSet> dataSets = new ArrayList<>();
+            dataSets.add(set1);
+
+            BarData data = new BarData(dataSets);
+            barChart.setData(data);
+        }
+
+        barChart.getBarData().setBarWidth(barWidth);
+        barChart.getXAxis().setAxisMinValue(0);
+        barChart.groupBars(0, groupSpace, barSpace);
+        barChart.invalidate();
+    }
+
+
 }
